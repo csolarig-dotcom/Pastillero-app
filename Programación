@@ -8,6 +8,50 @@ index.html
     <title>Mi Pastillero</title>
 
     <style>
+
+.colores {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.color-btn {
+    width: auto;
+    margin: 0;
+    padding: 10px 15px;
+    border: 2px solid transparent;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.blanco {
+    background: white;
+    border-color: #ccc;
+}
+
+.rojo {
+    background: #ff6b6b;
+    color: white;
+}
+
+.azul {
+    background: #64b5f6;
+    color: white;
+}
+
+.amarillo {
+    background: #ffd54f;
+}
+
+.verde {
+    background: #81c784;
+    color: white;
+}
+
+.color-btn:hover {
+    transform: scale(1.05);
+}
         body {
             font-family: Arial, sans-serif;
             background: #f4f6ff;
@@ -73,19 +117,27 @@ index.html
         }
 
         #guardar {
-            background: #333;
-            color: white;
+            background: #F8F1E3;
+            color: Marfil;
         }
 
-        #bluetooth {
-            background: #1976d2;
-            color: white;
-        }
+        #guardar {
+    background: #F8F1E3;
+    color: Marfil;
+}
 
-        #estado {
-            text-align: center;
-            margin-top: 15px;
-            font-weight: bold;
+#bluetooth {
+    background: #2196F3;
+    color: white;
+}
+
+#guardar:hover {
+    background: #6938E8;
+}
+
+#bluetooth:hover {
+    background: #1976D2;
+}
         }
 
         .resultado {
@@ -135,11 +187,33 @@ index.html
         Color
     </label>
 
-    <input
-        type="text"
-        id="color"
-        placeholder="Ej. Blanco"
-    >
+    <div class="colores">
+
+    <button type="button" class="color-btn blanco" onclick="seleccionarColor('Blanco')">
+        ⚪ Blanco
+    </button>
+
+    <button type="button" class="color-btn rojo" onclick="seleccionarColor('Rojo')">
+        🔴 Rojo
+    </button>
+
+    <button type="button" class="color-btn azul" onclick="seleccionarColor('Azul')">
+        🔵 Azul
+    </button>
+
+    <button type="button" class="color-btn amarillo" onclick="seleccionarColor('Amarillo')">
+        🟡 Amarillo
+    </button>
+
+    <button type="button" class="color-btn verde" onclick="seleccionarColor('Verde')">
+        🟢 Verde
+    </button>
+
+</div>
+
+<p id="colorSeleccionado">
+    Color seleccionado: ninguno
+</p>
 
 
     <label for="cantidad">
@@ -401,6 +475,16 @@ async function conectarBluetooth() {
 
 }
 
+let colorElegido = "";
+
+function seleccionarColor(color) {
+
+    colorElegido = color;
+
+    document.getElementById("colorSeleccionado").innerText =
+        "Color seleccionado: " + color;
+
+}
 </script>
 
 </body>
