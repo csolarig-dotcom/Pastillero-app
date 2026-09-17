@@ -1,0 +1,407 @@
+index.html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Mi Pastillero</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6ff;
+            margin: 0;
+            padding: 20px;
+            color: #222;
+        }
+
+        .app {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .subtitulo {
+            text-align: center;
+            color: #666;
+        }
+
+        label {
+            display: block;
+            margin-top: 18px;
+            font-weight: bold;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            margin-top: 7px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+
+        .dias {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .dias label {
+            margin: 0;
+            font-weight: normal;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            margin-top: 25px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        #guardar {
+            background: #333;
+            color: white;
+        }
+
+        #bluetooth {
+            background: #1976d2;
+            color: white;
+        }
+
+        #estado {
+            text-align: center;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        .resultado {
+            margin-top: 25px;
+            padding: 15px;
+            background: #f0f2ff;
+            border-radius: 12px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="app">
+
+    <h1>💊 Mi Pastillero</h1>
+
+    <p class="subtitulo">
+        Configura tu pastilla y conecta tu micro:bit
+    </p>
+
+    <label for="nombre">
+        Nombre de la pastilla
+    </label>
+
+    <input
+        type="text"
+        id="nombre"
+        placeholder="Ej. Paracetamol"
+    >
+
+
+    <label for="tipo">
+        Tipo de pastilla
+    </label>
+
+    <select id="tipo">
+        <option value="">Seleccionar</option>
+        <option>Tableta</option>
+        <option>Cápsula</option>
+        <option>Pastilla</option>
+        <option>Otra</option>
+    </select>
+
+
+    <label for="color">
+        Color
+    </label>
+
+    <input
+        type="text"
+        id="color"
+        placeholder="Ej. Blanco"
+    >
+
+
+    <label for="cantidad">
+        Cantidad por toma
+    </label>
+
+    <input
+        type="number"
+        id="cantidad"
+        min="1"
+        value="1"
+    >
+
+
+    <label>
+        Días de la semana
+    </label>
+
+    <div class="dias">
+
+        <label>
+            <input type="checkbox" value="Lunes">
+            Lunes
+        </label>
+
+        <label>
+            <input type="checkbox" value="Martes">
+            Martes
+        </label>
+
+        <label>
+            <input type="checkbox" value="Miércoles">
+            Miércoles
+        </label>
+
+        <label>
+            <input type="checkbox" value="Jueves">
+            Jueves
+        </label>
+
+        <label>
+            <input type="checkbox" value="Viernes">
+            Viernes
+        </label>
+
+        <label>
+            <input type="checkbox" value="Sábado">
+            Sábado
+        </label>
+
+        <label>
+            <input type="checkbox" value="Domingo">
+            Domingo
+        </label>
+
+    </div>
+
+
+    <label for="veces">
+        Veces al día
+    </label>
+
+    <input
+        type="number"
+        id="veces"
+        min="1"
+        max="10"
+        value="1"
+    >
+
+
+    <label for="hora1">
+        Hora de la primera toma
+    </label>
+
+    <input type="time" id="hora1">
+
+
+    <label for="hora2">
+        Hora de la segunda toma
+    </label>
+
+    <input type="time" id="hora2">
+
+
+    <label for="hora3">
+        Hora de la tercera toma
+    </label>
+
+    <input type="time" id="hora3">
+
+
+    <button id="guardar" onclick="guardarConfiguracion()">
+        💾 Guardar configuración
+    </button>
+
+
+    <button id="bluetooth" onclick="conectarBluetooth()">
+        🟦 Conectar con micro:bit
+    </button>
+
+
+    <p id="estado">
+        ⚪ Micro:bit no conectado
+    </p>
+
+
+    <div class="resultado" id="resultado">
+        Todavía no hay una configuración guardada.
+    </div>
+
+</div>
+
+
+<script>
+
+let bluetoothDevice = null;
+let bluetoothCharacteristic = null;
+
+
+// GUARDAR CONFIGURACIÓN
+
+function guardarConfiguracion() {
+
+    const nombre = document.getElementById("nombre").value;
+    const tipo = document.getElementById("tipo").value;
+    const color = document.getElementById("color").value;
+    const cantidad = document.getElementById("cantidad").value;
+    const veces = document.getElementById("veces").value;
+
+    const horas = [
+        document.getElementById("hora1").value,
+        document.getElementById("hora2").value,
+        document.getElementById("hora3").value
+    ];
+
+
+    const diasSeleccionados = [];
+
+    document.querySelectorAll(".dias input:checked").forEach(
+        function(checkbox) {
+            diasSeleccionados.push(checkbox.value);
+        }
+    );
+
+
+    const configuracion = {
+
+        nombre: nombre,
+
+        tipo: tipo,
+
+        color: color,
+
+        cantidad: cantidad,
+
+        dias: diasSeleccionados,
+
+        vecesAlDia: veces,
+
+        horarios: horas
+
+    };
+
+
+    localStorage.setItem(
+        "configuracionPastillero",
+        JSON.stringify(configuracion)
+    );
+
+
+    document.getElementById("resultado").innerHTML = `
+
+        <h3>✅ Configuración guardada</h3>
+
+        <p><strong>Pastilla:</strong> ${nombre}</p>
+
+        <p><strong>Tipo:</strong> ${tipo}</p>
+
+        <p><strong>Color:</strong> ${color}</p>
+
+        <p><strong>Cantidad:</strong> ${cantidad}</p>
+
+        <p><strong>Días:</strong> ${diasSeleccionados.join(", ")}</p>
+
+        <p><strong>Veces al día:</strong> ${veces}</p>
+
+        <p><strong>Horarios:</strong> ${horas.filter(h => h !== "").join(", ")}</p>
+
+    `;
+
+}
+
+
+// BLUETOOTH
+
+async function conectarBluetooth() {
+
+    if (!navigator.bluetooth) {
+
+        alert(
+            "Tu navegador no permite Web Bluetooth. Usa Google Chrome o Microsoft Edge."
+        );
+
+        return;
+
+    }
+
+
+    try {
+
+        document.getElementById("estado").innerText =
+            "🔎 Buscando micro:bit...";
+
+
+        bluetoothDevice = await navigator.bluetooth.requestDevice({
+
+            filters: [
+                {
+                    namePrefix: "BBC micro:bit"
+                }
+            ],
+
+            optionalServices: [
+                "e95d93af-251d-470a-a062-fa1922dfa9a"
+            ]
+
+        });
+
+
+        const server =
+            await bluetoothDevice.gatt.connect();
+
+
+        const service =
+            await server.getPrimaryService(
+                "e95d93af-251d-470a-a062-fa1922dfa9a"
+            );
+
+
+        bluetoothCharacteristic =
+            await service.getCharacteristic(
+                "e95d93ee-251d-470a-a062-fa1922dfa9a"
+            );
+
+
+        document.getElementById("estado").innerText =
+            "🟢 Micro:bit conectado";
+
+
+    } catch (error) {
+
+        console.log(error);
+
+        document.getElementById("estado").innerText =
+            "🔴 No se pudo conectar";
+
+    }
+
+}
+
+</script>
+
+</body>
+</html>
