@@ -1,2 +1,1225 @@
 # Dosi-app
 Aplicación que configura los horarios, número de veces, pastillas y tipos de pastillas que seran utilizadas para el pastillero. Esta aplicación tiene como función ser una manera mas útil de programar estas configuraciones sin necesidades de usar unicamente el microbit.
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Dosi - Pastillero inteligente</title>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        body {
+
+            margin: 0;
+
+            padding: 20px;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            background: #F8F1E3;
+
+            color: #5F513F;
+
+        }
+
+
+        .app {
+
+            max-width: 650px;
+
+            margin: auto;
+
+            background: #FFFDF8;
+
+            padding: 30px;
+
+            border-radius: 25px;
+
+            box-shadow:
+                0 8px 25px
+                rgba(95,81,63,0.12);
+
+        }
+
+
+        .logo {
+
+            text-align: center;
+
+            font-size: 48px;
+
+            margin-bottom: 5px;
+
+        }
+
+
+        h1 {
+
+            text-align: center;
+
+            margin: 0;
+
+            font-size: 34px;
+
+            color: #8F7655;
+
+        }
+
+
+        .subtitulo {
+
+            text-align: center;
+
+            margin-top: 8px;
+
+            color: #8F806C;
+
+            font-size: 15px;
+
+        }
+
+
+        .seccion {
+
+            margin-top: 28px;
+
+            padding: 20px;
+
+            background: #FBF6ED;
+
+            border-radius: 18px;
+
+        }
+
+
+        .seccion h2 {
+
+            margin-top: 0;
+
+            font-size: 20px;
+
+            color: #8F7655;
+
+        }
+
+
+        label {
+
+            display: block;
+
+            margin-top: 16px;
+
+            font-weight: bold;
+
+        }
+
+
+        input,
+        select {
+
+            width: 100%;
+
+            padding: 12px;
+
+            margin-top: 7px;
+
+            border: 1px solid #D8C8B0;
+
+            border-radius: 10px;
+
+            background: white;
+
+            color: #5F513F;
+
+            font-size: 16px;
+
+        }
+
+
+        input:focus,
+        select:focus {
+
+            outline: none;
+
+            border-color: #B89B72;
+
+        }
+
+
+        /* COLORES */
+
+        .colores {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 10px;
+
+            margin-top: 10px;
+
+        }
+
+
+        .color-btn {
+
+            width: 100%;
+
+            padding: 12px;
+
+            margin: 0;
+
+            border-radius: 12px;
+
+            border: 2px solid transparent;
+
+            cursor: pointer;
+
+            font-size: 14px;
+
+            transition: 0.2s;
+
+        }
+
+
+        .color-btn:hover {
+
+            transform: scale(1.03);
+
+        }
+
+
+        .color-btn.seleccionado {
+
+            border: 3px solid #6F5B43;
+
+        }
+
+
+        .blanco {
+            background: #F5F2EA;
+        }
+
+        .rosa {
+            background: #E8B7B7;
+        }
+
+        .azul {
+            background: #B8D4E3;
+        }
+
+        .verde {
+            background: #BFD1B5;
+        }
+
+        .amarillo {
+            background: #E8D99A;
+        }
+
+        .lila {
+            background: #C9BDD9;
+        }
+
+
+        #colorSeleccionado {
+
+            margin-top: 10px;
+
+            font-size: 14px;
+
+            color: #8F7655;
+
+        }
+
+
+        /* DÍAS */
+
+        .dias {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 8px;
+
+            margin-top: 10px;
+
+        }
+
+
+        .dia {
+
+            padding: 10px;
+
+            background: #E8DCC8;
+
+            border-radius: 10px;
+
+            text-align: center;
+
+            cursor: pointer;
+
+            font-size: 13px;
+
+        }
+
+
+        .dia input {
+
+            display: none;
+
+        }
+
+
+        .dia.seleccionado {
+
+            background: #B89B72;
+
+            color: white;
+
+        }
+
+
+        /* BOTONES */
+
+        button {
+
+            border: none;
+
+            cursor: pointer;
+
+            font-family: inherit;
+
+        }
+
+
+        .boton {
+
+            width: 100%;
+
+            padding: 15px;
+
+            margin-top: 12px;
+
+            border-radius: 13px;
+
+            font-size: 16px;
+
+            font-weight: bold;
+
+            transition: 0.2s;
+
+        }
+
+
+        .boton:hover {
+
+            transform: translateY(-1px);
+
+        }
+
+
+        .guardar {
+
+            background: #B89B72;
+
+            color: white;
+
+        }
+
+
+        .guardar:hover {
+
+            background: #A68A64;
+
+        }
+
+
+        .bluetooth {
+
+            background: #D8C3A5;
+
+            color: #5F513F;
+
+        }
+
+
+        .enviar {
+
+            background: #8F7655;
+
+            color: white;
+
+        }
+
+
+        /* ESTADO */
+
+        .estado {
+
+            text-align: center;
+
+            margin-top: 15px;
+
+            padding: 12px;
+
+            border-radius: 12px;
+
+            background: #F1E7D5;
+
+            font-weight: bold;
+
+        }
+
+
+        /* RESULTADO */
+
+        .resultado {
+
+            margin-top: 20px;
+
+            padding: 18px;
+
+            background: #F8F1E3;
+
+            border-radius: 15px;
+
+            line-height: 1.6;
+
+        }
+
+
+        .oculto {
+
+            display: none;
+
+        }
+
+
+        @media (max-width: 500px) {
+
+            .app {
+
+                padding: 20px;
+
+            }
+
+
+            .colores {
+
+                grid-template-columns:
+                    repeat(2, 1fr);
+
+            }
+
+
+            .dias {
+
+                grid-template-columns:
+                    repeat(2, 1fr);
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="app">
+
+
+    <div class="logo">
+        💊
+    </div>
+
+
+    <h1>Dosi</h1>
+
+
+    <p class="subtitulo">
+        Tu dosis, a tiempo.
+    </p>
+
+
+
+    <!-- INFORMACIÓN -->
+
+    <div class="seccion">
+
+        <h2>💊 Información de la pastilla</h2>
+
+
+        <label for="nombre">
+            Nombre de la pastilla
+        </label>
+
+        <input
+            type="text"
+            id="nombre"
+            placeholder="Ej. Paracetamol"
+        >
+
+
+        <label for="tipo">
+            Tipo de pastilla
+        </label>
+
+        <select id="tipo">
+
+            <option value="">
+                Seleccionar
+            </option>
+
+            <option value="Tableta">
+                Tableta
+            </option>
+
+            <option value="Cápsula">
+                Cápsula
+            </option>
+
+            <option value="Pastilla">
+                Pastilla
+            </option>
+
+            <option value="Otra">
+                Otra
+            </option>
+
+        </select>
+
+
+        <label>
+            Color de la pastilla
+        </label>
+
+
+        <div class="colores">
+
+
+            <button
+                type="button"
+                class="color-btn blanco"
+                onclick="seleccionarColor('Blanco', this)"
+            >
+                ⚪ Blanco
+            </button>
+
+
+            <button
+                type="button"
+                class="color-btn rosa"
+                onclick="seleccionarColor('Rosa', this)"
+            >
+                🌸 Rosa
+            </button>
+
+
+            <button
+                type="button"
+                class="color-btn azul"
+                onclick="seleccionarColor('Azul', this)"
+            >
+                🔵 Azul
+            </button>
+
+
+            <button
+                type="button"
+                class="color-btn verde"
+                onclick="seleccionarColor('Verde', this)"
+            >
+                🟢 Verde
+            </button>
+
+
+            <button
+                type="button"
+                class="color-btn amarillo"
+                onclick="seleccionarColor('Amarillo', this)"
+            >
+                🟡 Amarillo
+            </button>
+
+
+            <button
+                type="button"
+                class="color-btn lila"
+                onclick="seleccionarColor('Lila', this)"
+            >
+                🟣 Lila
+            </button>
+
+
+        </div>
+
+
+        <p id="colorSeleccionado">
+            Color seleccionado: ninguno
+        </p>
+
+
+        <label for="cantidad">
+            Cantidad por toma
+        </label>
+
+        <input
+            type="number"
+            id="cantidad"
+            min="1"
+            max="20"
+            value="1"
+        >
+
+    </div>
+
+
+
+    <!-- HORARIO -->
+
+    <div class="seccion">
+
+        <h2>📅 Horario</h2>
+
+
+        <label>
+            Días de la semana
+        </label>
+
+
+        <div class="dias">
+
+
+            <label class="dia">
+
+                <input
+                    type="checkbox"
+                    value="Lunes"
+                    onchange="marcarDia(this)"
+                >
+
+                Lunes
+
+            </label>
+
+
+            <label class="dia">
+
+                <input
+                    type="checkbox"
+                    value="Martes"
+                    onchange="marcarDia(this)"
+                >
+
+                Martes
+
+            </label>
+
+
+            <label class="dia">
+
+                <input
+                    type="checkbox"
+                    value="Miércoles"
+                    onchange="marcarDia(this)"
+                >
+
+                Miércoles
+
+            </label>
+
+
+            <label class="dia">
+
+                <input
+                    type="checkbox"
+                    value="Jueves"
+                    onchange="marcarDia(this)"
+                >
+
+                Jueves
+
+            </label>
+
+
+            <label class="dia">
+
+                <input
+                    type="checkbox"
+                    value="Viernes"
+                    onchange="marcarDia(this)"
+                >
+
+                Viernes
+
+            </label>
+
+
+            <label class="dia">
+
+                <input
+                    type="checkbox"
+                    value="Sábado"
+                    onchange="marcarDia(this)"
+                >
+
+                Sábado
+
+            </label>
+
+
+            <label class="dia">
+
+                <input
+                    type="checkbox"
+                    value="Domingo"
+                    onchange="marcarDia(this)"
+                >
+
+                Domingo
+
+            </label>
+
+
+        </div>
+
+
+        <label for="veces">
+            Veces al día
+        </label>
+
+        <input
+            type="number"
+            id="veces"
+            min="1"
+            max="10"
+            value="1"
+            onchange="actualizarHorarios()"
+        >
+
+
+        <label for="hora1">
+            Hora 1
+        </label>
+
+        <input
+            type="time"
+            id="hora1"
+        >
+
+
+        <label for="hora2">
+            Hora 2
+        </label>
+
+        <input
+            type="time"
+            id="hora2"
+        >
+
+
+        <label for="hora3">
+            Hora 3
+        </label>
+
+        <input
+            type="time"
+            id="hora3"
+        >
+
+    </div>
+
+
+
+    <!-- CONEXIÓN -->
+
+    <div class="seccion">
+
+        <h2>📡 Conexión</h2>
+
+
+        <button
+            class="boton bluetooth"
+            onclick="conectarBluetooth()"
+        >
+            🟦 Conectar micro:bit
+        </button>
+
+
+        <div
+            class="estado"
+            id="estado"
+        >
+            ⚪ Micro:bit no conectado
+        </div>
+
+
+        <button
+            class="boton enviar"
+            onclick="enviarConfiguracion()"
+        >
+            📤 Enviar configuración al micro:bit
+        </button>
+
+
+    </div>
+
+
+
+    <!-- GUARDAR -->
+
+    <button
+        class="boton guardar"
+        onclick="guardarConfiguracion()"
+    >
+        💾 Guardar configuración
+    </button>
+
+
+    <div
+        class="resultado"
+        id="resultado"
+    >
+
+        Todavía no has guardado ninguna configuración.
+
+    </div>
+
+
+</div>
+
+
+
+<script>
+
+
+let colorElegido = "";
+
+let bluetoothDevice = null;
+
+let bluetoothCharacteristic = null;
+
+
+
+/* COLOR */
+
+function seleccionarColor(color, boton) {
+
+    colorElegido = color;
+
+
+    document
+        .querySelectorAll(".color-btn")
+        .forEach(function(btn) {
+
+            btn.classList.remove(
+                "seleccionado"
+            );
+
+        });
+
+
+    boton.classList.add(
+        "seleccionado"
+    );
+
+
+    document.getElementById(
+        "colorSeleccionado"
+    ).innerText =
+        "Color seleccionado: " + color;
+
+}
+
+
+
+/* DÍAS */
+
+function marcarDia(checkbox) {
+
+    const dia =
+        checkbox.parentElement;
+
+
+    if (checkbox.checked) {
+
+        dia.classList.add(
+            "seleccionado"
+        );
+
+    } else {
+
+        dia.classList.remove(
+            "seleccionado"
+        );
+
+    }
+
+}
+
+
+
+/* GUARDAR */
+
+function guardarConfiguracion() {
+
+
+    const nombre =
+        document.getElementById(
+            "nombre"
+        ).value;
+
+
+    const tipo =
+        document.getElementById(
+            "tipo"
+        ).value;
+
+
+    const cantidad =
+        document.getElementById(
+            "cantidad"
+        ).value;
+
+
+    const veces =
+        document.getElementById(
+            "veces"
+        ).value;
+
+
+
+    const horas = [
+
+        document.getElementById(
+            "hora1"
+        ).value,
+
+        document.getElementById(
+            "hora2"
+        ).value,
+
+        document.getElementById(
+            "hora3"
+        ).value
+
+    ];
+
+
+
+    const diasSeleccionados = [];
+
+
+    document
+        .querySelectorAll(
+            ".dias input:checked"
+        )
+        .forEach(
+            function(checkbox) {
+
+                diasSeleccionados.push(
+                    checkbox.value
+                );
+
+            }
+        );
+
+
+
+    const configuracion = {
+
+        nombre: nombre,
+
+        tipo: tipo,
+
+        color: colorElegido,
+
+        cantidad: cantidad,
+
+        dias: diasSeleccionados,
+
+        vecesAlDia: veces,
+
+        horarios: horas
+
+    };
+
+
+
+    localStorage.setItem(
+
+        "configuracionPastillero",
+
+        JSON.stringify(
+            configuracion
+        )
+
+    );
+
+
+
+    mostrarConfiguracion(
+        configuracion
+    );
+
+}
+
+
+
+/* MOSTRAR CONFIGURACIÓN */
+
+function mostrarConfiguracion(
+    configuracion
+) {
+
+
+    document.getElementById(
+        "resultado"
+    ).innerHTML = `
+
+        <h3>✅ Configuración guardada</h3>
+
+        <p>
+            <strong>Pastilla:</strong>
+            ${configuracion.nombre}
+        </p>
+
+        <p>
+            <strong>Tipo:</strong>
+            ${configuracion.tipo}
+        </p>
+
+        <p>
+            <strong>Color:</strong>
+            ${configuracion.color}
+        </p>
+
+        <p>
+            <strong>Cantidad:</strong>
+            ${configuracion.cantidad}
+        </p>
+
+        <p>
+            <strong>Días:</strong>
+            ${configuracion.dias.join(", ")}
+        </p>
+
+        <p>
+            <strong>Veces al día:</strong>
+            ${configuracion.vecesAlDia}
+        </p>
+
+        <p>
+            <strong>Horarios:</strong>
+            ${configuracion.horarios
+                .filter(h => h !== "")
+                .join(", ")
+            }
+        </p>
+
+    `;
+
+}
+
+
+
+/* BLUETOOTH */
+
+async function conectarBluetooth() {
+
+
+    if (!navigator.bluetooth) {
+
+        alert(
+            "Tu navegador no permite Web Bluetooth. Usa Google Chrome o Microsoft Edge."
+        );
+
+        return;
+
+    }
+
+
+
+    try {
+
+
+        document.getElementById(
+            "estado"
+        ).innerText =
+            "🔎 Buscando micro:bit...";
+
+
+
+        bluetoothDevice =
+            await navigator.bluetooth.requestDevice({
+
+                filters: [
+
+                    {
+                        namePrefix:
+                            "BBC micro:bit"
+                    }
+
+                ],
+
+                optionalServices: [
+
+                    "e95d93af-251d-470a-a062-fa1922dfa9a"
+
+                ]
+
+            });
+
+
+
+        const server =
+            await bluetoothDevice.gatt.connect();
+
+
+
+        const service =
+            await server.getPrimaryService(
+                "e95d93af-251d-470a-a062-fa1922dfa9a"
+            );
+
+
+
+        bluetoothCharacteristic =
+            await service.getCharacteristic(
+                "e95d93ee-251d-470a-a062-fa1922dfa9a"
+            );
+
+
+
+        document.getElementById(
+            "estado"
+        ).innerText =
+            "🟢 Micro:bit conectado";
+
+
+    }
+
+
+    catch (error) {
+
+
+        console.log(error);
+
+
+        document.getElementById(
+            "estado"
+        ).innerText =
+            "🔴 No se pudo conectar";
+
+
+    }
+
+}
+
+
+
+/* ENVIAR CONFIGURACIÓN */
+
+async function enviarConfiguracion() {
+
+
+    if (!bluetoothCharacteristic) {
+
+        alert(
+            "Primero conecta el micro:bit."
+        );
+
+        return;
+
+    }
+
+
+
+    const configuracion =
+        localStorage.getItem(
+            "configuracionPastillero"
+        );
+
+
+    if (!configuracion) {
+
+        alert(
+            "Primero guarda una configuración."
+        );
+
+        return;
+
+    }
+
+
+
+    try {
+
+
+        const encoder =
+            new TextEncoder();
+
+
+        const datos =
+            encoder.encode(
+                configuracion
+            );
+
+
+        await bluetoothCharacteristic
+            .writeValue(datos);
+
+
+
+        alert(
+            "✅ Configuración enviada al micro:bit."
+        );
+
+
+    }
+
+
+    catch (error) {
+
+
+        console.log(error);
+
+
+        alert(
+            "❌ No se pudo enviar la configuración."
+        );
+
+    }
+
+}
+
+
+</script>
+
+
+</body>
+
+</html>
